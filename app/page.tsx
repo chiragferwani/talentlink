@@ -19,6 +19,9 @@ export default function LandingPage() {
             <Link href="#how" className="text-sm text-muted-foreground hover:text-foreground">
               How it works
             </Link>
+            <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground">
+              Company Login
+            </Link>
             <Link href="/login">
               <Button size="sm" className="bg-primary text-primary-foreground">
                 Candidate Login
@@ -54,38 +57,25 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right-side preview cards */}
+          {/* Right-side visuals */}
           <div className="grid w-full gap-3">
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-sm text-muted-foreground">Preview</div>
-                <div className="mt-2 rounded-md border bg-card p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">Messages</div>
-                    <span className="text-xs text-muted-foreground">Unified thread</span>
-                  </div>
-                  <div className="mt-2 space-y-2">
-                    <div className="rounded-md bg-secondary/80 p-3">
-                      <div className="text-sm font-medium">Recruiter</div>
-                      <div className="text-sm text-muted-foreground">Hi Alex — can we schedule a 30‑min chat?</div>
-                    </div>
-                    <div className="rounded-md bg-accent/60 p-3">
-                      <div className="text-sm font-medium">You</div>
-                      <div className="text-sm text-muted-foreground">Tomorrow 10:30 works for me.</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 rounded-md border bg-card p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">Next step</div>
-                    <span className="text-xs text-muted-foreground">Scheduling</span>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    Choose a slot and you’re confirmed — no email back‑and‑forth.
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <img
+              src="/candidate-messaging-dashboard-ui.jpg"
+              alt="Unified candidate messaging dashboard preview"
+              className="w-full rounded-md border bg-card"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <img
+                src="/interview-scheduling-flow.jpg"
+                alt="Scheduling confirmation flow"
+                className="w-full rounded-md border bg-card"
+              />
+              <img
+                src="/mobile-candidate-portal.jpg"
+                alt="Mobile candidate portal view"
+                className="w-full rounded-md border bg-card"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -143,11 +133,14 @@ export default function LandingPage() {
             </p>
           </li>
         </ol>
-        <div className="mt-10">
+        <div className="mt-10 flex items-center gap-4">
           <Link href="/login">
             <Button size="lg" className="bg-primary text-primary-foreground">
               Candidate Login
             </Button>
+          </Link>
+          <Link href="/admin" className="text-sm underline">
+            Company Login
           </Link>
         </div>
       </section>
@@ -155,7 +148,12 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t">
         <div className="mx-auto max-w-6xl px-4 py-10 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} TalentLink. All rights reserved.
+          <div className="flex items-center justify-between">
+            <span>© {new Date().getFullYear()} TalentLink. All rights reserved.</span>
+            <Link href="/admin" className="hover:text-foreground">
+              Company Login
+            </Link>
+          </div>
         </div>
       </footer>
     </main>

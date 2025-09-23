@@ -78,10 +78,10 @@ export default function AdminPage() {
 
   if (!token) {
     return (
-      <main className="container mx-auto max-w-xl p-6">
-        <Card className="bg-background">
+      <main className="min-h-screen flex items-center justify-center p-6">
+        <Card className="bg-background w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-pretty">Admin Login</CardTitle>
+            <CardTitle className="text-pretty text-center">Company Login</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={onLogin} className="grid gap-4">
@@ -98,7 +98,6 @@ export default function AdminPage() {
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <p className="text-muted-foreground text-sm">Prototype password: {"ProtoAdmin@123"}</p>
               </div>
               <Button type="submit">Sign in</Button>
             </form>

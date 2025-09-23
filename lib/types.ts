@@ -38,13 +38,20 @@ export type Candidate = {
   last_name: string
   email: string
   phone?: string
+  location?: string
+  linkedin_url?: string
   role_title: string
   resume_url?: string
+  portfolio_links?: string[]
+  certificates?: string[]
   skills: string[]
   notes?: string
+  public_feedback?: string
   stage: "Applied" | "Screening" | "Interview" | "Offer" | "Reject"
   timeline: InterviewEvent[]
   messages: Message[]
+  gdpr_consent: boolean
+  data_retention_consent: boolean
   createdAt: string
   updatedAt: string
   deletedAt?: string | null

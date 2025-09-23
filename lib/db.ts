@@ -47,17 +47,74 @@ const c1: Candidate = {
   last_name: "Johnson",
   email: "alex.johnson@example.com",
   phone: "+1 555-0100",
+  location: "San Francisco, CA",
+  linkedin_url: "https://linkedin.com/in/alexjohnson",
   role_title: "Senior Frontend Engineer",
   resume_url: "/resume-placeholder.jpg",
+  portfolio_links: ["https://alexjohnson.dev", "https://github.com/alexjohnson"],
+  certificates: ["AWS Certified Developer", "React Professional Certificate"],
   skills: ["React", "TypeScript", "Next.js", "Accessibility", "Testing"],
   notes: "Strong UI/UX sensibility. Good communication.",
+  public_feedback: "Excellent technical skills and great cultural fit. Looking forward to next steps.",
   stage: "Screening",
   timeline: [],
   messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
   createdAt: iso(),
   updatedAt: iso(),
   deletedAt: null,
 }
+candidates.set(c1.id, c1)
+
+// Add some sample messages and interviews to the candidate
+const sampleMessages = [
+  {
+    id: "msg_001",
+    candidateId: c1.id,
+    channel: "email" as Channel,
+    templateId: "tmpl_invite",
+    subject: "Welcome to TalentLink!",
+    content: "Hi Alex, welcome to our hiring process for the Senior Frontend Engineer position. We're excited to have you as a candidate!",
+    createdAt: "2024-01-10T10:00:00Z",
+    sentiment: "positive" as const,
+    escalated: false
+  },
+  {
+    id: "msg_002", 
+    candidateId: c1.id,
+    channel: "sms" as Channel,
+    subject: "Interview Reminder",
+    content: "Hi Alex! Just a friendly reminder about your technical interview tomorrow at 2 PM. The meeting link is in your email. Good luck!",
+    createdAt: "2024-01-14T16:00:00Z",
+    sentiment: "positive" as const,
+    escalated: false
+  },
+  {
+    id: "msg_003",
+    candidateId: c1.id,
+    channel: "linkedin" as Channel,
+    subject: "Great to connect!",
+    content: "Alex, it was great meeting you during the screening call. Looking forward to the next steps in the process!",
+    createdAt: "2024-01-12T14:30:00Z",
+    sentiment: "positive" as const,
+    escalated: false
+  }
+]
+
+const sampleInterview = {
+  id: "evt_001",
+  candidateId: c1.id,
+  title: "Technical Interview - Frontend Skills",
+  start: "2024-01-15T14:00:00Z",
+  end: "2024-01-15T15:30:00Z",
+  stakeholders: ["John Smith (Senior Engineer)", "Sarah Wilson (Engineering Manager)"],
+  link: "https://meet.google.com/abc-def-ghi",
+  createdAt: "2024-01-10T12:00:00Z"
+}
+
+c1.messages = sampleMessages
+c1.timeline = [sampleInterview]
 candidates.set(c1.id, c1)
 
 export function listCandidates(includeDeleted = false): Candidate[] {
@@ -184,7 +241,7 @@ export function log(type: AuditLog["type"], message: string, meta?: Record<strin
 
 // Prototype admin auth - returns token when valid
 export function adminLogin(email: string, password: string): { ok: boolean; token?: string; error?: string } {
-  const ok = email.endsWith("@talentlink.com") && password === "ProtoAdmin@123"
+  const ok = email === "abc@gmail.com" && password === "admin123"
   if (ok) {
     const token = id("admin")
     log("auth", `Admin login success for ${email}`, { email })

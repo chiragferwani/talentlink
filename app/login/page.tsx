@@ -14,33 +14,11 @@ export default function CandidateLoginPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [email, setEmail] = useState("")
-  const [code, setCode] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [password, setPassword] = useState("")
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
-    try {
-      const res = await fetch("/api/candidate/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: code || undefined }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err?.message || "Login failed")
-      }
-      const data = await res.json()
-      if (data?.id) {
-        router.push(`/candidates/${data.id}`)
-      } else {
-        throw new Error("Candidate not found")
-      }
-    } catch (err: any) {
-      toast({ title: "Login failed", description: err?.message || "Please try again.", variant: "destructive" })
-    } finally {
-      setLoading(false)
-    }
+    router.push("/candidate/home")
   }
 
   return (
@@ -64,18 +42,17 @@ export default function CandidateLoginPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="code">Access Code (optional)</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
-                id="code"
-                type="text"
-                placeholder="Provided in your invite (if any)"
-                value={code}
-                onChange={(e) => setCode(e.target.value.trim())}
+                id="password"
+                type="password"
+                placeholder="Enter any password (prototype)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">If you received a unique link, you can skip the code.</p>
             </div>
-            <Button type="submit" disabled={loading} className="bg-primary text-primary-foreground">
-              {loading ? "Signing in..." : "Sign in"}
+            <Button type="submit" className="bg-primary text-primary-foreground">
+              Sign in
             </Button>
           </form>
           <p className="mt-4 text-xs text-muted-foreground">
