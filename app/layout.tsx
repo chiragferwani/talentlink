@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: 'TalentLink',
   description: 'Modern recruitment platform for seamless hiring',
   generator: 'TalentLink',
+  icons: {
+    icon: '/tallogo.png',
+    shortcut: '/tallogo.png',
+    apple: '/tallogo.png',
+  },
 }
 
 export default function RootLayout({

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 
 export default function LandingPage() {
   return (
@@ -8,7 +9,14 @@ export default function LandingPage() {
       {/* Navbar */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3" aria-label="Main navigation">
-          <Link href="/" className="font-semibold tracking-tight text-xl">
+          <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight text-xl">
+            <Image
+              src="/tallogo.png"
+              alt="TalentLink Logo"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
             TalentLink
             <span className="sr-only"> - go to homepage</span>
           </Link>

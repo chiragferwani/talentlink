@@ -67,7 +67,7 @@ export default function FrontPage() {
                   <div className="mt-2 space-y-2">
                     <div className="rounded-md bg-secondary/80 p-3">
                       <div className="text-sm font-medium">Recruiter</div>
-                      <div className="text-sm text-muted-foreground">Hi Alex — can we schedule a 30-min chat?</div>
+                      <div className="text-sm text-muted-foreground">Hi Akash — can we schedule a 30-min chat?</div>
                     </div>
                     <div className="rounded-md bg-accent/60 p-3">
                       <div className="text-sm font-medium">You</div>

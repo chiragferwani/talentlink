@@ -43,15 +43,15 @@ templates.set(t3.id, t3)
 // Seed candidate
 const c1: Candidate = {
   id: "cand_001",
-  first_name: "Alex",
-  last_name: "Johnson",
-  email: "alex.johnson@example.com",
+  first_name: "Akash",
+  last_name: "Pandit",
+  email: "akash.pandit@example.com",
   phone: "+1 555-0100",
   location: "San Francisco, CA",
-  linkedin_url: "https://linkedin.com/in/alexjohnson",
+  linkedin_url: "https://linkedin.com/in/akashpandit",
   role_title: "Senior Frontend Engineer",
   resume_url: "/resume-placeholder.jpg",
-  portfolio_links: ["https://alexjohnson.dev", "https://github.com/alexjohnson"],
+  portfolio_links: ["https://akashpandit.dev", "https://github.com/akashpandit"],
   certificates: ["AWS Certified Developer", "React Professional Certificate"],
   skills: ["React", "TypeScript", "Next.js", "Accessibility", "Testing"],
   notes: "Strong UI/UX sensibility. Good communication.",
@@ -75,7 +75,7 @@ const sampleMessages = [
     channel: "email" as Channel,
     templateId: "tmpl_invite",
     subject: "Welcome to TalentLink!",
-    content: "Hi Alex, welcome to our hiring process for the Senior Frontend Engineer position. We're excited to have you as a candidate!",
+    content: "Hi Akash, welcome to our hiring process for the Senior Frontend Engineer position. We're excited to have you as a candidate!",
     createdAt: "2024-01-10T10:00:00Z",
     sentiment: "positive" as const,
     escalated: false
@@ -85,7 +85,7 @@ const sampleMessages = [
     candidateId: c1.id,
     channel: "sms" as Channel,
     subject: "Interview Reminder",
-    content: "Hi Alex! Just a friendly reminder about your technical interview tomorrow at 2 PM. The meeting link is in your email. Good luck!",
+    content: "Hi Akash! Just a friendly reminder about your technical interview tomorrow at 2 PM. The meeting link is in your email. Good luck!",
     createdAt: "2024-01-14T16:00:00Z",
     sentiment: "positive" as const,
     escalated: false
@@ -95,7 +95,7 @@ const sampleMessages = [
     candidateId: c1.id,
     channel: "linkedin" as Channel,
     subject: "Great to connect!",
-    content: "Alex, it was great meeting you during the screening call. Looking forward to the next steps in the process!",
+    content: "Akash, it was great meeting you during the screening call. Looking forward to the next steps in the process!",
     createdAt: "2024-01-12T14:30:00Z",
     sentiment: "positive" as const,
     escalated: false
