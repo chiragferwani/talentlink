@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import { Inbox, Calendar, Shield, UserCheck, MessageSquare, Settings } from "lucide-react"
 
 export default function LandingPage() {
   return (
@@ -93,24 +94,39 @@ export default function LandingPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-semibold text-primary">Unified Inbox</div>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Inbox className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-sm font-semibold text-primary">Unified Inbox</div>
+              </div>
+              <p className="text-sm text-muted-foreground">
                 Email, SMS, and in‑app replies in one place. Candidates reply anywhere — you see everything together.
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-semibold text-primary">1‑Click Scheduling</div>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="text-sm font-semibold text-primary">1‑Click Scheduling</div>
+              </div>
+              <p className="text-sm text-muted-foreground">
                 Offer times and confirm instantly. Reschedule and reminders are built in.
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-semibold text-primary">Private Admin</div>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="text-sm font-semibold text-primary">Private Admin</div>
+              </div>
+              <p className="text-sm text-muted-foreground">
                 Your team manages templates, audit logs, and escalations privately from the hidden{" "}
                 <span className="font-mono">/admin</span>.
               </p>
@@ -123,20 +139,35 @@ export default function LandingPage() {
       <section id="how" className="mx-auto max-w-6xl px-4 pb-16">
         <ol className="grid gap-4 md:grid-cols-3">
           <li className="rounded-md border p-6">
-            <div className="text-sm font-semibold">1. Candidate logs in</div>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                <UserCheck className="w-4 h-4 text-orange-600" />
+              </div>
+              <div className="text-sm font-semibold">1. Candidate logs in</div>
+            </div>
+            <p className="text-sm text-muted-foreground">
               Simple email-based login to access messages and upcoming steps.
             </p>
           </li>
           <li className="rounded-md border p-6">
-            <div className="text-sm font-semibold">2. Communicate & schedule</div>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-cyan-600" />
+              </div>
+              <div className="text-sm font-semibold">2. Communicate & schedule</div>
+            </div>
+            <p className="text-sm text-muted-foreground">
               Reply in one thread and confirm interviews without leaving the portal.
             </p>
           </li>
           <li className="rounded-md border p-6">
-            <div className="text-sm font-semibold">3. Team works in admin</div>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <Settings className="w-4 h-4 text-indigo-600" />
+              </div>
+              <div className="text-sm font-semibold">3. Team works in admin</div>
+            </div>
+            <p className="text-sm text-muted-foreground">
               Recruiters manage templates, audit logs, and escalations privately.
             </p>
           </li>
