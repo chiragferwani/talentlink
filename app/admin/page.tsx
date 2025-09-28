@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
+import Image from "next/image"
 
 type Candidate = {
   id: string
@@ -108,21 +109,29 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="container mx-auto p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold text-pretty">TalentLink Admin</h1>
-        <Button variant="secondary" onClick={clear}>
-          Sign out
-        </Button>
-      </div>
-      <Tabs defaultValue="candidates" className="w-full">
-        <TabsList>
-          <TabsTrigger value="candidates">Candidates</TabsTrigger>
-          <TabsTrigger value="send">Send Message</TabsTrigger>
-          <TabsTrigger value="schedule">Schedule</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="logs">Audit Logs</TabsTrigger>
-        </TabsList>
+    <main className="min-h-dvh bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 border-b border-blue-700 shadow-lg">
+        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Image src="/tallogo.png" alt="TalentLink Logo" width={40} height={40} className="rounded-lg" />
+            <div>
+              <h1 className="text-xl font-semibold text-white">Admin Console</h1>
+              <p className="text-sm text-blue-100">Manage candidates, messages, and templates</p>
+            </div>
+          </div>
+          <Button onClick={clear} className="bg-white/10 text-white hover:bg-white/20">Sign out</Button>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <Tabs defaultValue="candidates" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="candidates">Candidates</TabsTrigger>
+            <TabsTrigger value="send">Send Message</TabsTrigger>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="templates">Templates</TabsTrigger>
+            <TabsTrigger value="logs">Audit Logs</TabsTrigger>
+          </TabsList>
 
         <TabsContent value="candidates">
           <CandidatesTab />
@@ -143,7 +152,8 @@ export default function AdminPage() {
         <TabsContent value="logs">
           <LogsTab />
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </main>
   )
 }
@@ -154,9 +164,9 @@ function CandidatesTab() {
     fetcher,
   )
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
       <CardHeader>
-        <CardTitle className="text-pretty">Candidate List</CardTitle>
+        <CardTitle className="text-pretty text-emerald-800">Candidate List</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -203,6 +213,7 @@ function SendTab() {
   const [sms, setSms] = useState(false)
   const [wa, setWa] = useState(false)
   const [li, setLi] = useState(false)
+  const [previewMode, setPreviewMode] = useState<"email" | "sms">("email")
 
   const channels = useMemo(() => {
     const arr: string[] = []
@@ -212,6 +223,48 @@ function SendTab() {
     if (li) arr.push("linkedin")
     return arr
   }, [email, sms, wa, li])
+
+  // Resolve current selections
+  const selectedCandidate = useMemo(() => list?.candidates?.find((c) => c.id === candidateId) || null, [list, candidateId])
+  const selectedTemplate = useMemo(() => tmpl?.templates?.find((t) => t.id === templateId) || null, [tmpl, templateId])
+
+  // Pick upcoming interview (or last) for variables
+  const interviewContext = useMemo(() => {
+    if (!selectedCandidate) return null
+    const now = new Date()
+    const upcoming = [...(selectedCandidate.timeline || [])]
+      .filter((e) => new Date(e.start) >= now)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())[0]
+    if (upcoming) return upcoming
+    // Fallback to most recent past
+    const pastSorted = [...(selectedCandidate.timeline || [])].sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime())
+    return pastSorted[0] || null
+  }, [selectedCandidate])
+
+  // Variable substitution
+  function renderTemplate(text: string | undefined): string {
+    if (!text) return ""
+    const vars: Record<string, string> = {
+      first_name: selectedCandidate?.first_name || "Candidate",
+      last_name: selectedCandidate?.last_name || "",
+      role_title: selectedCandidate?.role_title || "",
+      stage: selectedCandidate?.stage || "",
+      interviewer_names: interviewContext?.stakeholders?.join(", ") || "",
+      interview_link: interviewContext?.link || "",
+      candidate_email: selectedCandidate?.email || "",
+      company_email: "recruiter@talentlink.com",
+      today: new Date().toLocaleDateString(),
+    }
+    return text.replace(/{{\s*(\w+)\s*}}/g, (_, key) => (key in vars ? vars[key] : ""))
+  }
+
+  const effectiveSubject = useMemo(() => {
+    return renderTemplate(subject || selectedTemplate?.subject || "")
+  }, [subject, selectedTemplate, selectedCandidate, interviewContext])
+
+  const effectiveBody = useMemo(() => {
+    return renderTemplate(body || selectedTemplate?.body || "")
+  }, [body, selectedTemplate, selectedCandidate, interviewContext])
 
   async function onSend() {
     if (!candidateId || channels.length === 0) {
@@ -241,9 +294,9 @@ function SendTab() {
   return (
     <div className="grid gap-4 mt-4">
       <div className="grid md:grid-cols-2 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-cyan-50 to-sky-50 border-cyan-200 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-pretty">Message Composer</CardTitle>
+            <CardTitle className="text-pretty text-cyan-800">Message Composer</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
@@ -310,8 +363,68 @@ function SendTab() {
             <Button onClick={onSend}>Send</Button>
           </CardContent>
         </Card>
-        <TemplatesHelp />
+        {/* Live Preview Panel */}
+        <Card className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-pretty text-rose-800">Live Preview</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {/* Mode toggle */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className={`px-3 py-1 rounded-md text-sm border ${
+                  previewMode === "email" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-foreground"
+                }`}
+                onClick={() => setPreviewMode("email")}
+              >
+                Email
+              </button>
+              <button
+                type="button"
+                className={`px-3 py-1 rounded-md text-sm border ${
+                  previewMode === "sms" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-foreground"
+                }`}
+                onClick={() => setPreviewMode("sms")}
+              >
+                SMS / WhatsApp
+              </button>
+            </div>
+
+            {previewMode === "email" ? (
+              <div className="rounded-md border bg-white/70">
+                <div className="border-b p-3 text-sm">
+                  <div className="flex gap-2"><span className="font-medium">From:</span><span>recruiter@talentlink.com</span></div>
+                  <div className="flex gap-2"><span className="font-medium">To:</span><span>{selectedCandidate?.email || "-"}</span></div>
+                  <div className="flex gap-2"><span className="font-medium">Subject:</span><span>{effectiveSubject || "(no subject)"}</span></div>
+                </div>
+                <div className="p-4 whitespace-pre-wrap text-sm leading-relaxed">
+                  {effectiveBody || "Your message body will appear here. Select a candidate and/or template, or type your own subject/body."}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-md border bg-white/70 p-4 text-sm">
+                <div className="mb-2">
+                  <span className="font-medium">To:</span> {selectedCandidate?.first_name ? `${selectedCandidate.first_name} ${selectedCandidate.last_name}` : "-"}
+                </div>
+                <div className="rounded-lg bg-muted p-3 whitespace-pre-wrap">
+                  {(
+                    effectiveBody || effectiveSubject || "Your SMS content preview will appear here."
+                  )}
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">Length: {(effectiveBody || effectiveSubject || "").length} chars</div>
+              </div>
+            )}
+
+            {/* Context Hints */}
+            <div className="text-xs text-muted-foreground">
+              Supports variables: {"{{first_name}}"}, {"{{role_title}}"}, {"{{stage}}"}, {"{{interviewer_names}}"}, {"{{interview_link}}"}
+            </div>
+          </CardContent>
+        </Card>
       </div>
+      {/* Keep template help below */}
+      <TemplatesHelp />
     </div>
   )
 }
@@ -337,12 +450,16 @@ function TemplatesHelp() {
 }
 
 function ScheduleTab() {
-  const { data: list } = useSWR<{ candidates: Candidate[] }>("/api/candidates", fetcher)
+  const { data: list, mutate } = useSWR<{ candidates: Candidate[] }>("/api/candidates", fetcher)
   const [candidateId, setCandidateId] = useState<string | null>(null)
   const [title, setTitle] = useState("Interview")
   const [start, setStart] = useState("")
   const [end, setEnd] = useState("")
   const [stakeholders, setStakeholders] = useState("recruiter@talentlink.com; hiring-manager@talentlink.com")
+  const selectedCandidate = useMemo(
+    () => list?.candidates?.find((c) => c.id === candidateId) || null,
+    [list, candidateId],
+  )
 
   async function onSchedule() {
     if (!candidateId || !title || !start || !end) {
@@ -365,58 +482,101 @@ function ScheduleTab() {
     const data = await res.json()
     if (res.ok) {
       alert(`Scheduled: ${data.event.title}`)
+      // refresh candidate list so timeline updates
+      await mutate()
     } else {
       alert(data.error || "Failed")
     }
   }
 
   return (
-    <Card className="mt-4">
-      <CardHeader>
-        <CardTitle className="text-pretty">Schedule Interview</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label>Candidate</Label>
-            <Select onValueChange={(v) => setCandidateId(v)} value={candidateId || ""}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select candidate" />
-              </SelectTrigger>
-              <SelectContent>
-                {list?.candidates?.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.first_name} {c.last_name} — {c.role_title}
-                  </SelectItem>
-                )) || null}
-              </SelectContent>
-            </Select>
+    <div className="grid gap-6 mt-4">
+      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-pretty text-amber-800">Schedule Interview</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Candidate</Label>
+              <Select onValueChange={(v) => setCandidateId(v)} value={candidateId || ""}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select candidate" />
+                </SelectTrigger>
+                <SelectContent>
+                  {list?.candidates?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.first_name} {c.last_name} — {c.role_title}
+                    </SelectItem>
+                  )) || null}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>Title</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Start</Label>
+              <Input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label>End</Label>
+              <Input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+            </div>
+            <div className="md:col-span-2 grid gap-2">
+              <Label>Stakeholders (semicolon separated)</Label>
+              <Input value={stakeholders} onChange={(e) => setStakeholders(e.target.value)} />
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label>Title</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
-          </div>
-          <div className="grid gap-2">
-            <Label>Start</Label>
-            <Input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
-          </div>
-          <div className="grid gap-2">
-            <Label>End</Label>
-            <Input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
-          </div>
-          <div className="md:col-span-2 grid gap-2">
-            <Label>Stakeholders (semicolon separated)</Label>
-            <Input value={stakeholders} onChange={(e) => setStakeholders(e.target.value)} />
-          </div>
-        </div>
-        <Button onClick={onSchedule}>Create Event</Button>
-      </CardContent>
-    </Card>
+          <Button onClick={onSchedule}>Create Event</Button>
+        </CardContent>
+      </Card>
+
+      {/* Scheduled Interviews Section */}
+      <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-pretty text-indigo-800">Scheduled Interviews</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!selectedCandidate ? (
+            <div className="text-sm text-muted-foreground">Select a candidate to view their scheduled interviews.</div>
+          ) : selectedCandidate.timeline && selectedCandidate.timeline.length > 0 ? (
+            <div className="space-y-3">
+              {[...selectedCandidate.timeline]
+                .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime())
+                .map((evt) => (
+                  <div key={evt.id} className="rounded-md border p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">{evt.title}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(evt.start).toLocaleString()} — {new Date(evt.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Interviewers: {evt.stakeholders.join(", ")}</div>
+                        {evt.link ? (
+                          <a href={evt.link} target="_blank" rel="noopener noreferrer" className="text-xs underline">
+                            Join link
+                          </a>
+                        ) : null}
+                      </div>
+                      <span className="text-xs rounded bg-secondary px-2 py-1">{new Date(evt.start) > new Date() ? "Upcoming" : "Completed"}</span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No interviews scheduled yet for {selectedCandidate.first_name}.</div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
 function TemplatesTab() {
   const { data, mutate } = useSWR<{ templates: Template[] }>("/api/templates", fetcher)
+  const [editId, setEditId] = useState<string | null>(null)
   const [name, setName] = useState("")
   const [subject, setSubject] = useState("")
   const [body, setBody] = useState("")
@@ -428,13 +588,16 @@ function TemplatesTab() {
     }
     const res = await fetch("/api/templates", {
       method: "POST",
-      body: JSON.stringify({ name, subject: subject || undefined, body }),
+      body: JSON.stringify({ id: editId || undefined, name, subject: subject || undefined, body }),
     })
     if (res.ok) {
       await mutate()
-      setName("")
-      setSubject("")
-      setBody("")
+      // Clear only if it was a new template; for edits, keep in form
+      if (!editId) {
+        setName("")
+        setSubject("")
+        setBody("")
+      }
     } else {
       const d = await res.json()
       alert(d.error || "Failed to save")
@@ -443,11 +606,45 @@ function TemplatesTab() {
 
   return (
     <div className="grid gap-6 mt-4">
-      <Card>
+      <Card className="bg-gradient-to-br from-violet-50 to-fuchsia-50 border-violet-200 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-pretty">New Template</CardTitle>
+          <CardTitle className="text-pretty text-violet-800">New Template</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label>Edit existing (optional)</Label>
+            <Select
+              value={editId || ""}
+              onValueChange={(v) => {
+                if (v === "__clear__" || v === "") {
+                  setEditId(null)
+                  setName("")
+                  setSubject("")
+                  setBody("")
+                  return
+                }
+                setEditId(v)
+                const t = data?.templates?.find((x) => x.id === v)
+                if (t) {
+                  setName(t.name)
+                  setSubject(t.subject || "")
+                  setBody(t.body)
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a template to edit" />
+              </SelectTrigger>
+              <SelectContent>
+                {(data?.templates || []).map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value="__clear__">Clear selection</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid gap-2">
             <Label>Name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -460,13 +657,29 @@ function TemplatesTab() {
             <Label>Body</Label>
             <Textarea rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
           </div>
-          <Button onClick={onSave}>Save Template</Button>
+          <div className="flex items-center gap-3">
+            <Button onClick={onSave}>{editId ? "Update Template" : "Save Template"}</Button>
+            {editId ? (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setEditId(null)
+                  setName("")
+                  setSubject("")
+                  setBody("")
+                }}
+              >
+                New Template
+              </Button>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-pretty">Existing Templates</CardTitle>
+          <CardTitle className="text-pretty text-blue-800">Existing Templates</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -499,9 +712,9 @@ function LogsTab() {
     fetcher,
   )
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200 shadow-lg">
       <CardHeader>
-        <CardTitle className="text-pretty">Audit Logs</CardTitle>
+        <CardTitle className="text-pretty text-slate-800">Audit Logs</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>

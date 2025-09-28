@@ -39,6 +39,7 @@ const t3: Template = {
 templates.set(t1.id, t1)
 templates.set(t2.id, t2)
 templates.set(t3.id, t3)
+log("template", `Seeded ${[t1, t2, t3].length} templates`)
 
 // Seed candidate
 const c1: Candidate = {
@@ -66,6 +67,7 @@ const c1: Candidate = {
   deletedAt: null,
 }
 candidates.set(c1.id, c1)
+log("candidate", `Seeded candidate ${c1.first_name} ${c1.last_name} (${c1.id})`)
 
 // Add some sample messages and interviews to the candidate
 const sampleMessages = [
@@ -116,6 +118,137 @@ const sampleInterview = {
 c1.messages = sampleMessages
 c1.timeline = [sampleInterview]
 candidates.set(c1.id, c1)
+log("send", `Seeded ${sampleMessages.length} messages for ${c1.id}`)
+log("schedule", `Seeded 1 interview for ${c1.id}`, { candidateId: c1.id })
+
+// Seed additional Indian candidates
+const c2: Candidate = {
+  id: "cand_002",
+  first_name: "Priya",
+  last_name: "Sharma",
+  email: "priya.sharma@example.com",
+  phone: "+91 98765 43210",
+  location: "Mumbai, India",
+  linkedin_url: "https://linkedin.com/in/priya-sharma",
+  role_title: "Backend Engineer",
+  resume_url: undefined,
+  portfolio_links: ["https://github.com/priya-sharma"],
+  certificates: ["Oracle Certified Professional"],
+  skills: ["Node.js", "Express", "PostgreSQL", "Docker"],
+  notes: "Strong in API design and databases.",
+  public_feedback: "Solid backend fundamentals.",
+  stage: "Applied",
+  timeline: [],
+  messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
+  createdAt: iso(),
+  updatedAt: iso(),
+  deletedAt: null,
+}
+const c3: Candidate = {
+  id: "cand_003",
+  first_name: "Rahul",
+  last_name: "Mehta",
+  email: "rahul.mehta@example.com",
+  phone: "+91 99887 77665",
+  location: "Bengaluru, India",
+  linkedin_url: "https://linkedin.com/in/rahul-mehta",
+  role_title: "Full Stack Developer",
+  resume_url: undefined,
+  portfolio_links: ["https://rahul.dev"],
+  certificates: ["AWS Practitioner"],
+  skills: ["React", "TypeScript", "Node.js", "AWS"],
+  notes: "Great communicator.",
+  public_feedback: "Good ownership and velocity.",
+  stage: "Screening",
+  timeline: [],
+  messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
+  createdAt: iso(),
+  updatedAt: iso(),
+  deletedAt: null,
+}
+const c4: Candidate = {
+  id: "cand_004",
+  first_name: "Aditi",
+  last_name: "Verma",
+  email: "aditi.verma@example.com",
+  phone: "+91 91234 56780",
+  location: "Delhi, India",
+  linkedin_url: "https://linkedin.com/in/aditi-verma",
+  role_title: "Product Designer",
+  resume_url: undefined,
+  portfolio_links: ["https://aditiverma.design"],
+  certificates: ["Google UX"],
+  skills: ["Figma", "Prototyping", "User Research"],
+  notes: "Excellent UX case studies.",
+  public_feedback: "Strong product sense.",
+  stage: "Interview",
+  timeline: [],
+  messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
+  createdAt: iso(),
+  updatedAt: iso(),
+  deletedAt: null,
+}
+const c5: Candidate = {
+  id: "cand_005",
+  first_name: "Arjun",
+  last_name: "Iyer",
+  email: "arjun.iyer@example.com",
+  phone: "+91 90000 11122",
+  location: "Chennai, India",
+  linkedin_url: "https://linkedin.com/in/arjun-iyer",
+  role_title: "Data Engineer",
+  resume_url: undefined,
+  portfolio_links: ["https://github.com/arjun-iyer"],
+  certificates: ["Databricks", "GCP Data Engineer"],
+  skills: ["Python", "Spark", "Airflow", "BigQuery"],
+  notes: "Great with pipelines.",
+  public_feedback: "Data modeling expertise.",
+  stage: "Screening",
+  timeline: [],
+  messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
+  createdAt: iso(),
+  updatedAt: iso(),
+  deletedAt: null,
+}
+const c6: Candidate = {
+  id: "cand_006",
+  first_name: "Neha",
+  last_name: "Kapoor",
+  email: "neha.kapoor@example.com",
+  phone: "+91 90909 80807",
+  location: "Pune, India",
+  linkedin_url: "https://linkedin.com/in/neha-kapoor",
+  role_title: "QA Engineer",
+  resume_url: undefined,
+  portfolio_links: [],
+  certificates: ["ISTQB"],
+  skills: ["Cypress", "Playwright", "API Testing"],
+  notes: "Automation heavy.",
+  public_feedback: "Thorough test strategies.",
+  stage: "Applied",
+  timeline: [],
+  messages: [],
+  gdpr_consent: true,
+  data_retention_consent: true,
+  createdAt: iso(),
+  updatedAt: iso(),
+  deletedAt: null,
+}
+
+candidates.set(c2.id, c2)
+candidates.set(c3.id, c3)
+candidates.set(c4.id, c4)
+candidates.set(c5.id, c5)
+candidates.set(c6.id, c6)
+log("candidate", "Seeded additional sample candidates: Priya, Rahul, Aditi, Arjun, Neha")
 
 export function listCandidates(includeDeleted = false): Candidate[] {
   return Array.from(candidates.values()).filter((c) => includeDeleted || !c.deletedAt)
