@@ -2,7 +2,8 @@
 import useSWR from "swr"
 import type React from "react"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
+import { mutate as globalMutate } from "swr"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +13,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Plus, X } from "lucide-react"
 import Image from "next/image"
 
 type Candidate = {
@@ -39,13 +42,18 @@ type Template = { id: string; name: string; subject?: string; body: string }
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 function useLocalToken() {
-  const [token, setToken] = useState<string | null>(() => {
+  const [token, setToken] = useState<string | null>(null)
+  const [isClient, setIsClient] = useState(false)
+  
+  useEffect(() => {
+    setIsClient(true)
     try {
-      return localStorage.getItem("tl_admin_token")
+      setToken(localStorage.getItem("tl_admin_token"))
     } catch {
-      return null
+      // Ignore localStorage errors
     }
-  })
+  }, [])
+  
   const save = (t: string) => {
     setToken(t)
     try {
@@ -58,7 +66,7 @@ function useLocalToken() {
       localStorage.removeItem("tl_admin_token")
     } catch {}
   }
-  return { token, save, clear }
+  return { token: isClient ? token : null, save, clear }
 }
 
 export default function AdminPage() {
@@ -159,51 +167,281 @@ export default function AdminPage() {
 }
 
 function CandidatesTab() {
-  const { data: list } = useSWR<{ candidates: Candidate[] }>(
+  const { data: list, mutate } = useSWR<{ candidates: Candidate[] }>(
     "/api/candidates", // we will provide this via a small handler below
     fetcher,
   )
+  
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin_url: "",
+    role_title: "",
+    skills: [] as string[],
+    notes: "",
+    stage: "Applied" as "Applied" | "Screening" | "Interview" | "Offer" | "Reject"
+  })
+  const [skillInput, setSkillInput] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const addSkill = () => {
+    if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, skillInput.trim()]
+      }))
+      setSkillInput("")
+    }
+  }
+
+  const removeSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(skill => skill !== skillToRemove)
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch("/api/candidates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        // Reset form
+        setFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          phone: "",
+          location: "",
+          linkedin_url: "",
+          role_title: "",
+          skills: [],
+          notes: "",
+          stage: "Applied"
+        })
+        setIsAddDialogOpen(false)
+        // Refresh all candidate data across all tabs
+        await globalMutate("/api/candidates")
+        alert("Candidate added successfully!")
+      } else {
+        const error = await response.json()
+        alert(error.error || "Failed to add candidate")
+      }
+    } catch (error) {
+      alert("Failed to add candidate")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-    <Card className="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-pretty text-emerald-800">Candidate List</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Stage</TableHead>
-              <TableHead>Skills</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list?.candidates?.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell>
-                  {c.first_name} {c.last_name}
-                </TableCell>
-                <TableCell>{c.role_title}</TableCell>
-                <TableCell>{c.stage}</TableCell>
-                <TableCell className="max-w-[240px] truncate">{c.skills.join(", ")}</TableCell>
-                <TableCell>
-                  <a className="underline hover:no-underline" href={`/candidates/${c.id}`}>
-                    Open
-                  </a>
-                </TableCell>
+    <div className="mt-4 space-y-4">
+      <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-pretty text-emerald-800">Candidate List</CardTitle>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Candidate
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add New Candidate</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="first_name">First Name *</Label>
+                    <Input
+                      id="first_name"
+                      value={formData.first_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="last_name">Last Name *</Label>
+                    <Input
+                      id="last_name"
+                      value={formData.last_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="linkedin_url">LinkedIn URL</Label>
+                  <Input
+                    id="linkedin_url"
+                    value={formData.linkedin_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, linkedin_url: e.target.value }))}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="role_title">Role Title *</Label>
+                    <Input
+                      id="role_title"
+                      value={formData.role_title}
+                      onChange={(e) => setFormData(prev => ({ ...prev, role_title: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="stage">Stage</Label>
+                    <Select value={formData.stage} onValueChange={(value: "Applied" | "Screening" | "Interview" | "Offer" | "Reject") => setFormData(prev => ({ ...prev, stage: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Applied">Applied</SelectItem>
+                        <SelectItem value="Screening">Screening</SelectItem>
+                        <SelectItem value="Interview">Interview</SelectItem>
+                        <SelectItem value="Offer">Offer</SelectItem>
+                        <SelectItem value="Reject">Reject</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="skills">Skills *</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="skills"
+                      value={skillInput}
+                      onChange={(e) => setSkillInput(e.target.value)}
+                      placeholder="Add a skill"
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                    />
+                    <Button type="button" onClick={addSkill} variant="outline">
+                      Add
+                    </Button>
+                  </div>
+                  {formData.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.skills.map((skill, index) => (
+                        <div key={index} className="flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md text-sm">
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => removeSkill(skill)}
+                            className="ml-1 hover:text-emerald-600"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add Candidate"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Stage</TableHead>
+                <TableHead>Skills</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            )) || null}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {list?.candidates?.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell>
+                    {c.first_name} {c.last_name}
+                  </TableCell>
+                  <TableCell>{c.role_title}</TableCell>
+                  <TableCell>{c.stage}</TableCell>
+                  <TableCell className="max-w-[240px] truncate">{c.skills.join(", ")}</TableCell>
+                  <TableCell>
+                    <a className="underline hover:no-underline" href={`/candidates/${c.id}`}>
+                      Open
+                    </a>
+                  </TableCell>
+                </TableRow>
+              )) || null}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
 function SendTab() {
-  const { data: list } = useSWR<{ candidates: Candidate[] }>("/api/candidates", fetcher)
+  const { data: list, mutate } = useSWR<{ candidates: Candidate[] }>("/api/candidates", fetcher)
   const { data: tmpl } = useSWR<{ templates: Template[] }>("/api/templates", fetcher)
   const [candidateId, setCandidateId] = useState<string | null>(null)
   const [templateId, setTemplateId] = useState<string | null>(null)
@@ -483,7 +721,7 @@ function ScheduleTab() {
     if (res.ok) {
       alert(`Scheduled: ${data.event.title}`)
       // refresh candidate list so timeline updates
-      await mutate()
+      await globalMutate("/api/candidates")
     } else {
       alert(data.error || "Failed")
     }
@@ -591,7 +829,7 @@ function TemplatesTab() {
       body: JSON.stringify({ id: editId || undefined, name, subject: subject || undefined, body }),
     })
     if (res.ok) {
-      await mutate()
+      await globalMutate("/api/templates")
       // Clear only if it was a new template; for edits, keep in form
       if (!editId) {
         setName("")

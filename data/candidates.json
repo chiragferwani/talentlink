@@ -1,0 +1,220 @@
+[
+  {
+    "id": "cand_001",
+    "first_name": "Akash",
+    "last_name": "Pandit",
+    "email": "akash.pandit@example.com",
+    "phone": "+1 555-0100",
+    "location": "San Francisco, CA",
+    "linkedin_url": "https://linkedin.com/in/akashpandit",
+    "role_title": "Senior Frontend Engineer",
+    "resume_url": "/resume-placeholder.jpg",
+    "portfolio_links": [
+      "https://akashpandit.dev",
+      "https://github.com/akashpandit"
+    ],
+    "certificates": [
+      "AWS Certified Developer",
+      "React Professional Certificate"
+    ],
+    "skills": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "Accessibility",
+      "Testing"
+    ],
+    "notes": "Strong UI/UX sensibility. Good communication.",
+    "public_feedback": "Excellent technical skills and great cultural fit. Looking forward to next steps.",
+    "stage": "Screening",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_002",
+    "first_name": "Priya",
+    "last_name": "Sharma",
+    "email": "priya.sharma@example.com",
+    "phone": "+91 98765 43210",
+    "location": "Mumbai, India",
+    "linkedin_url": "https://linkedin.com/in/priya-sharma",
+    "role_title": "Backend Engineer",
+    "portfolio_links": [
+      "https://github.com/priya-sharma"
+    ],
+    "certificates": [
+      "Oracle Certified Professional"
+    ],
+    "skills": [
+      "Node.js",
+      "Express",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "notes": "Strong in API design and databases.",
+    "public_feedback": "Solid backend fundamentals.",
+    "stage": "Applied",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_003",
+    "first_name": "Rahul",
+    "last_name": "Mehta",
+    "email": "rahul.mehta@example.com",
+    "phone": "+91 99887 77665",
+    "location": "Bengaluru, India",
+    "linkedin_url": "https://linkedin.com/in/rahul-mehta",
+    "role_title": "Full Stack Developer",
+    "portfolio_links": [
+      "https://rahul.dev"
+    ],
+    "certificates": [
+      "AWS Practitioner"
+    ],
+    "skills": [
+      "React",
+      "TypeScript",
+      "Node.js",
+      "AWS"
+    ],
+    "notes": "Great communicator.",
+    "public_feedback": "Good ownership and velocity.",
+    "stage": "Screening",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_004",
+    "first_name": "Aditi",
+    "last_name": "Verma",
+    "email": "aditi.verma@example.com",
+    "phone": "+91 98765 12345",
+    "location": "Delhi, India",
+    "linkedin_url": "https://linkedin.com/in/aditi-verma",
+    "role_title": "Product Designer",
+    "portfolio_links": [
+      "https://aditidesigns.com"
+    ],
+    "certificates": [
+      "Google UX Design Certificate"
+    ],
+    "skills": [
+      "Figma",
+      "Prototyping",
+      "User Research"
+    ],
+    "notes": "Creative and user-focused.",
+    "public_feedback": "Great design thinking.",
+    "stage": "Interview",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_005",
+    "first_name": "Arjun",
+    "last_name": "Iyer",
+    "email": "arjun.iyer@example.com",
+    "phone": "+91 99888 77666",
+    "location": "Chennai, India",
+    "linkedin_url": "https://linkedin.com/in/arjun-iyer",
+    "role_title": "Data Engineer",
+    "portfolio_links": [
+      "https://github.com/arjun-iyer"
+    ],
+    "certificates": [
+      "AWS Data Analytics"
+    ],
+    "skills": [
+      "Python",
+      "Spark",
+      "Airflow",
+      "BigQuery"
+    ],
+    "notes": "Strong in data pipelines.",
+    "public_feedback": "Excellent data engineering skills.",
+    "stage": "Screening",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_006",
+    "first_name": "Neha",
+    "last_name": "Kapoor",
+    "email": "neha.kapoor@example.com",
+    "phone": "+91 98765 54321",
+    "location": "Pune, India",
+    "linkedin_url": "https://linkedin.com/in/neha-kapoor",
+    "role_title": "QA Engineer",
+    "portfolio_links": [
+      "https://github.com/neha-kapoor"
+    ],
+    "certificates": [
+      "ISTQB Certified"
+    ],
+    "skills": [
+      "Cypress",
+      "Playwright",
+      "API Testing"
+    ],
+    "notes": "Detail-oriented and thorough.",
+    "public_feedback": "Great attention to quality.",
+    "stage": "Applied",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:11:05.997Z",
+    "updatedAt": "2025-10-15T04:11:05.997Z",
+    "deletedAt": null
+  },
+  {
+    "id": "cand_bco9r8",
+    "first_name": "chirag",
+    "last_name": "ferwani",
+    "email": "ferwanichirag@gmail.com",
+    "phone": "1234567891",
+    "location": "pune",
+    "linkedin_url": "/chiragferwani",
+    "role_title": "software dev",
+    "portfolio_links": [],
+    "certificates": [],
+    "skills": [
+      "everything"
+    ],
+    "notes": "none",
+    "stage": "Applied",
+    "timeline": [],
+    "messages": [],
+    "gdpr_consent": true,
+    "data_retention_consent": true,
+    "createdAt": "2025-10-15T04:17:38.120Z",
+    "updatedAt": "2025-10-15T04:17:38.120Z",
+    "deletedAt": null
+  }
+]

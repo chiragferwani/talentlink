@@ -59,7 +59,7 @@ export type Candidate = {
 
 export type AuditLog = {
   id: string
-  type: "send" | "schedule" | "template" | "auth" | "gdpr"
+  type: "send" | "schedule" | "template" | "auth" | "gdpr" | "candidate"
   message: string
   createdAt: string
   meta?: Record<string, any>

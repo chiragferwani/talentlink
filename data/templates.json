@@ -1,0 +1,23 @@
+[
+  {
+    "id": "tmpl_invite",
+    "name": "Interview Invite",
+    "subject": "Interview for {{role_title}}",
+    "body": "Hi {{first_name}},\n\nWe'd love to invite you to interview for {{role_title}}.\nInterviewers: {{interviewer_names}}\nPlease use this link to book a time: {{interview_link}}\n\nBest,\nTalentLink Team",
+    "updatedAt": "2025-10-15T04:11:06.001Z"
+  },
+  {
+    "id": "tmpl_reject",
+    "name": "Rejection (Empathetic)",
+    "subject": "Update on your application for {{role_title}}",
+    "body": "Hi {{first_name}},\n\nThank you for taking the time to interview with us. After careful consideration, we won't be moving forward.\nWe truly appreciate your interest.{{feedback}}\n\nWishing you the best,\nTalentLink Team",
+    "updatedAt": "2025-10-15T04:11:06.001Z"
+  },
+  {
+    "id": "tmpl_status",
+    "name": "Status Update",
+    "subject": "Your application status: {{stage}}",
+    "body": "Hi {{first_name}},\n\nA quick update: your application is now at the \"{{stage}}\" stage. We'll keep you posted on the next steps.\n\nThanks,\nTalentLink",
+    "updatedAt": "2025-10-15T04:11:06.001Z"
+  }
+]
