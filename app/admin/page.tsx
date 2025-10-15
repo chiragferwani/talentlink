@@ -509,23 +509,51 @@ function SendTab() {
       alert("Select candidate and at least one channel.")
       return
     }
-    const res = await fetch("/api/send", {
-      method: "POST",
-      body: JSON.stringify({
-        candidateId,
-        templateId,
-        subject: subject || undefined,
-        body: body || undefined,
-        channels,
-      }),
-    })
-    const data = await res.json()
-    if (res.ok) {
-      alert(`Sent ${data.messages.length} message(s).`)
-      setSubject("")
-      setBody("")
-    } else {
-      alert(data.error || "Failed")
+    
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        body: JSON.stringify({
+          candidateId,
+          templateId,
+          subject: subject || undefined,
+          body: body || undefined,
+          channels,
+        }),
+      })
+      const data = await res.json()
+      
+      if (res.ok) {
+        // Show detailed delivery results
+        const { deliveryResults, summary } = data
+        
+        let message = `Message delivery summary:\n`
+        message += `✅ Successful: ${summary.successful}\n`
+        message += `❌ Failed: ${summary.failed}\n\n`
+        
+        deliveryResults.forEach((result: any) => {
+          if (result.success) {
+            if (result.channel === "email") {
+              message += `📧 Email sent to ${result.recipient}\n`
+              message += `   ⏰ Please check your inbox (and spam folder)\n`
+              message += `   📬 Email may take a few minutes to arrive\n`
+            } else {
+              message += `📱 ${result.channel.toUpperCase()}: ${result.message}\n`
+            }
+          } else {
+            message += `❌ ${result.channel.toUpperCase()} failed: ${result.error}\n`
+          }
+        })
+        
+        alert(message)
+        setSubject("")
+        setBody("")
+      } else {
+        alert(data.error || "Failed to send messages")
+      }
+    } catch (error) {
+      console.error("Send error:", error)
+      alert("Failed to send messages. Please try again.")
     }
   }
 
@@ -584,21 +612,36 @@ function SendTab() {
                 placeholder="Overrides template body; supports {{first_name}}, {{role_title}}, {{interview_link}}, {{interviewer_names}}"
               />
             </div>
-            <div className="flex items-center gap-6">
-              <label className="flex items-center gap-2">
-                <Switch checked={email} onCheckedChange={setEmail} /> <span>Email</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <Switch checked={sms} onCheckedChange={setSms} /> <span>SMS</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <Switch checked={wa} onCheckedChange={setWa} /> <span>WhatsApp</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <Switch checked={li} onCheckedChange={setLi} /> <span>LinkedIn</span>
-              </label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2">
+                  <Switch checked={email} onCheckedChange={setEmail} /> 
+                  <span className="flex items-center gap-1">
+                    Email 
+                    {email && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">✓ Real delivery</span>}
+                  </span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Switch checked={sms} onCheckedChange={setSms} /> <span>SMS</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Switch checked={wa} onCheckedChange={setWa} /> <span>WhatsApp</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Switch checked={li} onCheckedChange={setLi} /> <span>LinkedIn</span>
+                </label>
+              </div>
+              {email && (
+                <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                  📧 Email will be sent via web3forms to the candidate's email address
+                  <br />
+                  💡 <strong>Note:</strong> Emails may go to spam folder - ask candidates to check there too
+                </div>
+              )}
             </div>
-            <Button onClick={onSend}>Send</Button>
+            <Button onClick={onSend} className="w-full">
+              Send Messages
+            </Button>
           </CardContent>
         </Card>
         {/* Live Preview Panel */}
